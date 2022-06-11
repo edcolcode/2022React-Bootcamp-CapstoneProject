@@ -12,7 +12,7 @@ const StyledItemGrid = styled.div`
 `;
 
 const ItemGrid = ({loading, children}) => {
-    const content = (!loading)
+    const content = (loading)
         ? 
             (
                 <div>

@@ -53,7 +53,7 @@ const Products = () => {
     };
 
     const filteredItems = 
-        (activeCategories.size === 0 || activeCategories.size === items.results.length)
+        (activeCategories.size === 0 || activeCategories.size === items.length)
         ? items
         : items.filter(item => activeCategories.has(item.data.category.id));
 
@@ -61,7 +61,7 @@ const Products = () => {
         <StyledProducts>
             <StyledProductsSliceBarContainer>
                 <SliceBar 
-                    loading={areCategoriesLoaded}
+                    loading={!areCategoriesLoaded}
                     items={categories}
                     activeItems={activeCategories}
                     toggleItemState={toggleCategoryState}
@@ -70,7 +70,7 @@ const Products = () => {
             <StyledProductsContainer>
                 <h1>This is the Product List Page</h1>
                 <ItemGrid
-                    loading={areItemsLoaded}
+                    loading={!areItemsLoaded}
                 >
                     {
                         filteredItems.map(item => 

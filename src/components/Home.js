@@ -29,7 +29,9 @@ const Home = ({navigateProducts}) => {
             <Carousel
                 items={categories.results}
             />
-            <ItemGrid>
+            <ItemGrid
+                loading={false}
+            >
                 {
                     items.results.map(item => 
                         <Item

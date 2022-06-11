@@ -46,7 +46,7 @@ const SliceBar = ({items, activeItems, toggleItemState, loading}) => {
         toggleItemState(rootElement.dataset.id);
     };
 
-    const content = (!loading)
+    const content = (loading)
         ?
             (
                 <div>

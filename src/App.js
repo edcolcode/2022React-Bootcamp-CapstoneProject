@@ -38,7 +38,7 @@ const ContentContainer = styled(MainContainer)`
 const App = () => {
   // const { data, isLoading } = useFeaturedBanners();
   const {isLoading} = useFeaturedBanners();
-  const [isHomeDisplayed, setIsHomeDisplayed] = useState(false)
+  const [isHomeDisplayed, setIsHomeDisplayed] = useState(true);
 
   if (isLoading) {
     return (
