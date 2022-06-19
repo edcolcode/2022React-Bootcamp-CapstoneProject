@@ -1,5 +1,11 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import {nanoid} from 'nanoid';
+
+import Item from './Item';
+
+const loadingItems = new Array(16);
+loadingItems.fill(null, 0, loadingItems.length);
 
 const StyledItemGrid = styled.div`
     display: flex;
@@ -15,9 +21,12 @@ const ItemGrid = ({loading, children}) => {
     const content = (loading)
         ? 
             (
-                <div>
-                    <span>Loading...</span>
-                </div>
+                loadingItems.map(() => 
+                    <Item 
+                        key={`loadingItem-${nanoid()}`} 
+                        loading={true}
+                    />
+                )
             )
         : children;
 

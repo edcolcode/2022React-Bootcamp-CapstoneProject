@@ -1,6 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import {nanoid} from 'nanoid';
+import {SkeletonTheme} from 'react-loading-skeleton';
+
+import {skeletonTheme} from '../App';
+import SliceBarItem from './SliceBarItem';
+
+const loadingItems = new Array(8);
+loadingItems.fill(null, 0, loadingItems.length);
 
 const StyledSliceBar = styled.div`
     width: ${({theme}) => theme.coreSpace * 30}px;
@@ -15,24 +23,6 @@ const StyledSliceBar = styled.div`
 const StyledSlideBarList = styled.ul`
     margin: 0;
     padding-left: 0;
-`;
-const StyledSlideBarItem = styled.li`
-    display: block;
-    margin-top: ${({theme}) => theme.coreSpace}px;
-    margin-bottom: ${({theme}) => theme.coreSpace}px;
-
-    &:not(:last-child) {
-        margin-bottom: ${({theme}) => theme.coreSpace * 2}px;
-    }
-
-    font-weight: ${({selected}) => selected ? 'bolder': 'normal'}
-`;
-const StyledSliderBarItemA = styled.a`
-    color: black;
-
-`;
-const StyledSlideBarItemText = styled.span`
-    text-decoration: underline;
 `;
 
 const SliceBar = ({items, activeItems, toggleItemState, loading}) => {
@@ -49,28 +39,30 @@ const SliceBar = ({items, activeItems, toggleItemState, loading}) => {
     const content = (loading)
         ?
             (
-                <div>
-                    <span>
-                        Loading...
-                    </span>
-                </div>
+                <SkeletonTheme {...skeletonTheme.dark}>
+                {
+                    loadingItems.map(() => 
+                        <SliceBarItem 
+                            key={nanoid()}
+                            id={nanoid()}
+                            name=''
+                            selected={false}
+                            loading={true}
+                        />
+                    )
+                }
+                </SkeletonTheme>
             )
         :
             items.map(item => 
-                <StyledSlideBarItem
-                    key={item.id}
-                    data-id={item.id}
+                <SliceBarItem 
+                    key={item.id} 
+                    id={item.id}
+                    name={item.data.name}
                     selected={activeItems.has(item.id)}
                     onClick={handleItemClick}
-                >
-                    <StyledSliderBarItemA 
-                        href="#"
-                    >
-                        <StyledSlideBarItemText>
-                            {item.data.name}
-                        </StyledSlideBarItemText>
-                    </StyledSliderBarItemA>
-                </StyledSlideBarItem>
+                    loading={false}
+                />
             );
 
     return(
