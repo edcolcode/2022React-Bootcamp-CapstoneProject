@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
 
 import itemsData from '../mocks/feature-products.json';
@@ -32,15 +32,17 @@ const Products = () => {
     const [areCategoriesLoaded, setCategoriesLoaded] = useState(false);
     const [categories, setCategories] = useState([]);
     const [activeCategories, setActiveCategories] = useState(new Set());
+    const sectionTitle = useRef(null);
 
     useEffect(() => {
+        sectionTitle?.current && sectionTitle?.current.scrollIntoView();
         setTimeout(() => {
             setItems(itemsData.results);
             setItemsLoaded(true);
             setCategories(categoriesData.results);
             setCategoriesLoaded(true);
         }, 2000);
-    }, [])
+    }, []);
 
     const toggleCategoryState = (category) => {
         const newActiveCategories = new Set(activeCategories);
@@ -68,7 +70,7 @@ const Products = () => {
                 />
             </StyledProductsSliceBarContainer>
             <StyledProductsContainer>
-                <h1>This is the Product List Page</h1>
+                <h2 ref={sectionTitle}>This is the Product List Page</h2>
                 <ItemGrid
                     loading={!areItemsLoaded}
                 >

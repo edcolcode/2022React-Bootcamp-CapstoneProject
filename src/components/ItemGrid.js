@@ -4,7 +4,7 @@ import {nanoid} from 'nanoid';
 
 import Item from './Item';
 
-const loadingItems = new Array(16);
+const loadingItems = new Array(8);
 loadingItems.fill(null, 0, loadingItems.length);
 
 const StyledItemGrid = styled.div`
