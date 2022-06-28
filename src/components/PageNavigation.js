@@ -22,11 +22,11 @@ const StyledInput = styled.input`
 `;
 
 
-const PageNavigation = ({page, disableNextPage, prevPage, nextPage}) => {
+const PageNavigation = ({page, disabled, disableNextPage, prevPage, nextPage}) => {
     return (
         <StyledPageNavigation>
             <Button 
-                disabled={page <= 1}
+                disabled={disabled || page <= 1}
                 onClick={prevPage}
             >
                 <NavigateBefore size="18"/>
@@ -37,7 +37,7 @@ const PageNavigation = ({page, disableNextPage, prevPage, nextPage}) => {
                 disabled
             />
             <Button
-                disabled={disableNextPage}
+                disabled={disabled || disableNextPage}
                 onClick={nextPage}
             >
                 <NavigateNext size="18"/>
@@ -48,6 +48,7 @@ const PageNavigation = ({page, disableNextPage, prevPage, nextPage}) => {
 
 PageNavigation.propTypes = {
     page: PropTypes.number.isRequired,
+    disabled: PropTypes.bool,
     disableNextPage: PropTypes.bool,
 
     prevPage: PropTypes.func.isRequired,
@@ -56,6 +57,7 @@ PageNavigation.propTypes = {
 
 PageNavigation.defaulProps = {
     page: 1,
+    disabled: false,
     disableNextPage: true,
 };
 

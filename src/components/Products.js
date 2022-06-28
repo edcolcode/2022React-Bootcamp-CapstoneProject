@@ -133,6 +133,7 @@ const Products = () => {
                 />
                 <PageNavigation
                     page={page}
+                    disabled={isLoading}
                     disableNextPage={filterdItems.length < pageSize}
                     prevPage={handlePrevPage}
                     nextPage={handleNextPage}

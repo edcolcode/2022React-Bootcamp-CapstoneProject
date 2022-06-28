@@ -57,10 +57,11 @@ const Search = () => {
             items={items}
         />
         <PageNavigation
+            page={page}
+            disabled={isLoading}
+            disableNextPage={items.length < pageSize}
             prevPage={handlePrevPage}
             nextPage={handleNextPage}
-            disableNextPage={items.length < pageSize}
-            page={page}
         />
         </>
 
