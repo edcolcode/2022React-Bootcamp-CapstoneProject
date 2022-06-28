@@ -1,11 +1,10 @@
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect} from 'react';
 import styled from 'styled-components';
+import {useNavigate, useSearchParams} from 'react-router-dom';
 
-import itemsData from '../mocks/feature-products.json';
-import categoriesData from '../mocks/product-categories.json';
-
+import {navigationPaths, queriesParams} from '../utils/navigationConstants';
+import {useProducts} from '../utils/hooks/useProducts';
 import ItemGrid from './ItemGrid';
-import Item from './Item';
 import SliceBar from './SliceBar';
 import PageNavigation from './PageNavigation';
 
@@ -27,22 +26,56 @@ const StyledProductsContainer = styled.div`
 `;
 
 const Products = () => {
-    const [areItemsLoaded, setItemsLoaded] = useState(false);
-    const [items, setItems] = useState([]);
-    const [areCategoriesLoaded, setCategoriesLoaded] = useState(false);
-    const [categories, setCategories] = useState([]);
     const [activeCategories, setActiveCategories] = useState(new Set());
-    const sectionTitle = useRef(null);
+    const {data, isLoading} = useProducts();
+    const [items, setItems] = useState([]);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
+    
 
     useEffect(() => {
-        sectionTitle?.current && sectionTitle?.current.scrollIntoView();
-        setTimeout(() => {
-            setItems(itemsData.results);
-            setItemsLoaded(true);
-            setCategories(categoriesData.results);
-            setCategoriesLoaded(true);
-        }, 2000);
+        // Reset scroll position
+        window.scroll({
+            top: 0, 
+            left: 0, 
+            behavior: 'smooth',
+        });
     }, []);
+
+    useEffect(() => {
+        if (!isLoading) {
+            const results = data.results;
+            setItems(results);
+        }
+    }, [data, isLoading]);
+
+    useEffect(() => {
+        const categoriesSearchParam = searchParams.get(queriesParams.category);
+        if (categoriesSearchParam) {
+            const categories = categoriesSearchParam.split(',');
+            const newCategories = new Set();
+            
+            let shouldUpdateCategories = categories.length !== activeCategories.size;
+            categories.forEach(category => {
+                newCategories.add(category);
+                if (!activeCategories.has(category)) {
+                    shouldUpdateCategories = true;
+                }                
+            });
+
+            if (shouldUpdateCategories) {
+                setActiveCategories(newCategories);
+            }
+        } else {
+            if (activeCategories.size !== 0) {
+                setActiveCategories(new Set());
+            }
+        }
+    }, [searchParams, activeCategories]);
+
+    const clearCategories = () => {
+        navigate(navigationPaths.products);
+    };
 
     const toggleCategoryState = (category) => {
         const newActiveCategories = new Set(activeCategories);
@@ -51,38 +84,40 @@ const Products = () => {
         } else {
             newActiveCategories.add(category);
         }
-        setActiveCategories(newActiveCategories);
+        
+        const categories = [];
+        newActiveCategories.forEach(category => {
+            categories.push(category);
+        });
+        const newSearchParams = categories.join(',');
+
+        if (newSearchParams.length === 0) {
+            clearCategories();
+        } else {
+            setSearchParams(new URLSearchParams({[queriesParams.category]: newSearchParams}));
+        }
     };
 
-    const filteredItems = 
-        (activeCategories.size === 0 || activeCategories.size === items.length)
+    const filterdItems = activeCategories.size === 0
         ? items
-        : items.filter(item => activeCategories.has(item.data.category.id));
+        : items.filter(item => activeCategories.has(item.data.category.slug));
 
     return(
         <StyledProducts>
             <StyledProductsSliceBarContainer>
                 <SliceBar 
-                    loading={!areCategoriesLoaded}
-                    items={categories}
                     activeItems={activeCategories}
                     toggleItemState={toggleCategoryState}
+                    clearActiveItems={clearCategories}
                 />
             </StyledProductsSliceBarContainer>
             <StyledProductsContainer>
-                <h2 ref={sectionTitle}>This is the Product List Page</h2>
+                <h2>This is the Product List Page</h2>
                 <ItemGrid
-                    loading={!areItemsLoaded}
-                >
-                    {
-                        filteredItems.map(item => 
-                            <Item
-                                key={item.id}
-                                detail={item.data}
-                            />
-                        )    
-                    }
-                </ItemGrid>
+                    activeCategories={activeCategories}
+                    isLoading={isLoading}
+                    items={filterdItems}
+                />
                 <PageNavigation/>
             </StyledProductsContainer>
         </StyledProducts>

@@ -1,10 +1,12 @@
-import React from 'react';
+import {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import {nanoid} from 'nanoid';
 import {SkeletonTheme} from 'react-loading-skeleton';
 
 import {skeletonTheme} from '../App';
+import {useProductCategories} from '../utils/hooks/useProductCategories';
+import Button from './Button';
 import SliceBarItem from './SliceBarItem';
 
 const loadingItems = new Array(8);
@@ -25,18 +27,18 @@ const StyledSlideBarList = styled.ul`
     padding-left: 0;
 `;
 
-const SliceBar = ({items, activeItems, toggleItemState, loading}) => {
-    const handleItemClick = (event) => {
-        event.preventDefault();
-        let rootElement = event.target;
-        while (rootElement.tagName.toLowerCase() !== 'li') {
-            rootElement = rootElement.parentElement;
+const SliceBar = ({activeItems, toggleItemState, clearActiveItems}) => {
+    const {data, isLoading} = useProductCategories();
+    const [items, setItems] = useState([]);
+
+    useEffect(() => {
+        if (!isLoading) {
+            const results = data.results;
+            setItems(results);
         }
+    }, [isLoading, data]);
 
-        toggleItemState(rootElement.dataset.id);
-    };
-
-    const content = (loading)
+    const content = (isLoading)
         ?
             (
                 <SkeletonTheme {...skeletonTheme.dark}>
@@ -46,6 +48,7 @@ const SliceBar = ({items, activeItems, toggleItemState, loading}) => {
                             key={nanoid()}
                             id={nanoid()}
                             name=''
+                            slug=''
                             selected={false}
                             loading={true}
                         />
@@ -59,8 +62,9 @@ const SliceBar = ({items, activeItems, toggleItemState, loading}) => {
                     key={item.id} 
                     id={item.id}
                     name={item.data.name}
-                    selected={activeItems.has(item.id)}
-                    onClick={handleItemClick}
+                    slug={item.slugs[0]}
+                    selected={activeItems.has(item.slugs[0])}
+                    onClick={toggleItemState}
                     loading={false}
                 />
             );
@@ -70,15 +74,24 @@ const SliceBar = ({items, activeItems, toggleItemState, loading}) => {
             <StyledSlideBarList>
                 {content}
             </StyledSlideBarList>
+            {(!isLoading && activeItems.size > 0)
+                ?
+                <Button 
+                    onClick={clearActiveItems}
+                >
+                    Clear all
+                </Button>
+                :
+                null
+            }
         </StyledSliceBar>
     );
 };
 
 SliceBar.propTypes = {
-    items: PropTypes.array.isRequired,
     activeItems: PropTypes.object.isRequired, // Set
     toggleItemState: PropTypes.func.isRequired,
-    loading: PropTypes.bool.isRequired,
+    clearActiveItems: PropTypes.func.isRequired,
 };
 
 export default SliceBar;

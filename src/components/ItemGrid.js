@@ -4,8 +4,10 @@ import {nanoid} from 'nanoid';
 
 import Item from './Item';
 
+
 const loadingItems = new Array(8);
 loadingItems.fill(null, 0, loadingItems.length);
+
 
 const StyledItemGrid = styled.div`
     display: flex;
@@ -17,18 +19,28 @@ const StyledItemGrid = styled.div`
     height: 100%;
 `;
 
-const ItemGrid = ({loading, children}) => {
-    const content = (loading)
+
+const ItemGrid = ({isLoading, items}) => {
+    const content = (isLoading)
         ? 
-            (
-                loadingItems.map(() => 
-                    <Item 
-                        key={`loadingItem-${nanoid()}`} 
-                        loading={true}
-                    />
-                )
+        (
+            loadingItems.map(() => 
+                <Item 
+                    key={`loadingItem-${nanoid()}`} 
+                    loading={true}
+                />
             )
-        : children;
+        )
+        :
+        (
+            items.map(item => 
+                <Item
+                    id={item.id}
+                    key={item.id}
+                    detail={item.data}
+                />
+            )
+        );
 
     return (
         <StyledItemGrid>
@@ -38,7 +50,12 @@ const ItemGrid = ({loading, children}) => {
 };
 
 ItemGrid.propTypes = {
-    loading: PropTypes.bool.isRequired,
+    isLoading: PropTypes.bool,
+    items: PropTypes.array.isRequired,
+}
+
+ItemGrid.defaultProps = {
+    isLoading: false,
 }
 
 export default ItemGrid;
