@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../constants';
 import { useLatestAPI } from './useLatestAPI';
 
-export function useProducts() {
+export function useProducts(pageSize = 12, page = 1) {
   const { ref: apiRef, isLoading: isApiMetadataLoading } = useLatestAPI();
   const [products, setProducts] = useState(() => ({
     data: {},
@@ -25,7 +25,11 @@ export function useProducts() {
               apiRef
             }&q=${
               encodeURIComponent('[[at(document.type, "product")]]')
-            }&lang=en-us&pageSize=12`,
+            }&lang=en-us&pageSize=${
+              pageSize
+            }&page=${
+              page
+            }`,
           {
             signal: controller.signal,
           }
@@ -44,7 +48,7 @@ export function useProducts() {
     return () => {
       controller.abort();
     };
-  }, [apiRef, isApiMetadataLoading]);
+  }, [apiRef, isApiMetadataLoading, pageSize, page]);
 
   return products;
 }

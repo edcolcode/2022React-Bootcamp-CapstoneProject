@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../constants';
 import { useLatestAPI } from './useLatestAPI';
 
-export function useSearch(searchTerm) {
+export function useSearch(searchTerm, pageSize = 20, page = 1) {
   const { ref: apiRef, isLoading: isApiMetadataLoading } = useLatestAPI();
   const [search, setSearch] = useState(() => ({
     data: {},
@@ -27,7 +27,11 @@ export function useSearch(searchTerm) {
               encodeURIComponent('[[at(document.type, "product")]]')
             }&q=${
               encodeURIComponent(`[[fulltext(document, "${searchTerm}")]]`)
-            }&lang=en-us&pageSize=20`,
+            }&lang=en-us&pageSize=${
+              pageSize
+            }&page=${
+              page
+            }`,
           {
             signal: controller.signal,
           }
@@ -46,7 +50,7 @@ export function useSearch(searchTerm) {
     return () => {
       controller.abort();
     };
-  }, [apiRef, isApiMetadataLoading, searchTerm]);
+  }, [apiRef, isApiMetadataLoading, searchTerm, pageSize, page]);
 
   return search;
 }

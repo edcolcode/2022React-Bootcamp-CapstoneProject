@@ -8,6 +8,9 @@ import ItemGrid from './ItemGrid';
 import SliceBar from './SliceBar';
 import PageNavigation from './PageNavigation';
 
+
+const pageSize = 12;
+
 const StyledProducts = styled.div`
     display: flex;
     flex: 1;
@@ -27,7 +30,9 @@ const StyledProductsContainer = styled.div`
 
 const Products = () => {
     const [activeCategories, setActiveCategories] = useState(new Set());
-    const {data, isLoading} = useProducts();
+    const [page, setPage] = useState(1);
+
+    const {data, isLoading} = useProducts(pageSize, page);
     const [items, setItems] = useState([]);
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
@@ -98,6 +103,14 @@ const Products = () => {
         }
     };
 
+    const handlePrevPage = () => {
+        setPage(page - 1);
+    }
+
+    const handleNextPage = () => {
+        setPage(page + 1);
+    }
+
     const filterdItems = activeCategories.size === 0
         ? items
         : items.filter(item => activeCategories.has(item.data.category.slug));
@@ -112,13 +125,18 @@ const Products = () => {
                 />
             </StyledProductsSliceBarContainer>
             <StyledProductsContainer>
-                <h2>This is the Product List Page</h2>
+                <h2>Products</h2>
                 <ItemGrid
                     activeCategories={activeCategories}
                     isLoading={isLoading}
                     items={filterdItems}
                 />
-                <PageNavigation/>
+                <PageNavigation
+                    page={page}
+                    disableNextPage={filterdItems.length < pageSize}
+                    prevPage={handlePrevPage}
+                    nextPage={handleNextPage}
+                />
             </StyledProductsContainer>
         </StyledProducts>
     );

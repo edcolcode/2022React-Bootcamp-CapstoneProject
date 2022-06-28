@@ -1,10 +1,10 @@
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import {FirstPage} from '@styled-icons/material-rounded/FirstPage';
 import {NavigateBefore} from '@styled-icons/material-rounded/NavigateBefore';
 import {NavigateNext} from '@styled-icons/material-rounded/NavigateNext';
 
-
 import Button from './Button';
+
 
 const StyledPageNavigation = styled.div`
     display: flex;
@@ -14,39 +14,49 @@ const StyledPageNavigation = styled.div`
     margin-top: ${({theme}) => theme.coreSpace * 2}px;
     margin-bottom: ${({theme}) => theme.coreSpace * 2}px;
 `;
-const StyledPageNavigationLastPage = styled.div`
-    transform: rotate(180deg);
-`;
 const StyledInput = styled.input`
     width: ${({theme}) => theme.coreSpace * 8}px;
     height: 80%;
     
     text-align: center;
 `;
-const PageNavigation = () => {
+
+
+const PageNavigation = ({page, disableNextPage, prevPage, nextPage}) => {
     return (
         <StyledPageNavigation>
-            <Button disabled>
-                <FirstPage size="18"/>
-            </Button>
-            <Button disabled>
+            <Button 
+                disabled={page <= 1}
+                onClick={prevPage}
+            >
                 <NavigateBefore size="18"/>
             </Button>
             <StyledInput 
                 type="text" 
-                value="1"
+                value={page}
                 disabled
             />
-            <Button disabled>
+            <Button
+                disabled={disableNextPage}
+                onClick={nextPage}
+            >
                 <NavigateNext size="18"/>
-            </Button>
-            <Button disabled>
-                <StyledPageNavigationLastPage>
-                    <FirstPage size="18"/>
-                </StyledPageNavigationLastPage>
             </Button>
         </StyledPageNavigation>
     );
+};
+
+PageNavigation.propTypes = {
+    page: PropTypes.number.isRequired,
+    disableNextPage: PropTypes.bool,
+
+    prevPage: PropTypes.func.isRequired,
+    nextPage: PropTypes.func.isRequired,
+};
+
+PageNavigation.defaulProps = {
+    page: 1,
+    disableNextPage: true,
 };
 
 export default PageNavigation;
