@@ -7,7 +7,9 @@ import {
   Routes,
   Route,
 } from 'react-router-dom';
+import {Provider} from 'react-redux';
 
+import {store} from './store/store';
 import {navigationPaths} from './utils/navigationConstants';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -71,25 +73,27 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <SkeletonTheme {...skeletonTheme.ligth}>
-        <BrowserRouter>
-          <StyledApp>
-            <MainContainer>
-              <Header/>
-            </MainContainer>
-            <ContentContainer>
-              <Routes>
-                <Route path={navigationPaths.home} element={<Home/>}/>
-                <Route path={navigationPaths.home2} element={<Home/>}/>
-                <Route path={navigationPaths.product} element={<ProductDetail/>}/>
-                <Route path={navigationPaths.products} element={<Products/>}/>
-                <Route path={navigationPaths.search} element={<Search/>}/>
-              </Routes>
-            </ContentContainer>
-            <MainContainer>
-              <Footer/>
-            </MainContainer>
-          </StyledApp>
-        </BrowserRouter>
+        <Provider store={store}>
+          <BrowserRouter>
+            <StyledApp>
+              <MainContainer>
+                <Header/>
+              </MainContainer>
+              <ContentContainer>
+                <Routes>
+                  <Route path={navigationPaths.home} element={<Home/>}/>
+                  <Route path={navigationPaths.home2} element={<Home/>}/>
+                  <Route path={navigationPaths.product} element={<ProductDetail/>}/>
+                  <Route path={navigationPaths.products} element={<Products/>}/>
+                  <Route path={navigationPaths.search} element={<Search/>}/>
+                </Routes>
+              </ContentContainer>
+              <MainContainer>
+                <Footer/>
+              </MainContainer>
+            </StyledApp>
+          </BrowserRouter>
+        </Provider>
       </SkeletonTheme>
     </ThemeProvider>
   );
