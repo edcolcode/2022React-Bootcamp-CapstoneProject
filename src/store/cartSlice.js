@@ -9,14 +9,18 @@ export const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
-        addItem: (state, {payload: {id}}) => {
-            state.items[id] = 1;
+        addItem: (state, {payload: {item}}) => {
+            if (state.items[item.id]) {
+                state.items[item.id] = [state.items[item.id][0] + 1, item];
+            } else {
+                state.items[item.id] = [1, item];
+            }
         },
         removeItem: (state, {payload: {id}}) => {
-            state.items.delete(id);
+            delete state.items[id];
         },
-        modifyItem: (state, {payload: {id, amount}}) => {
-            state.items[id] = amount;
+        modifyItem: (state, {payload: {item, amount}}) => {
+            state.items[item.id] = [amount, item];
         },
     },
 });

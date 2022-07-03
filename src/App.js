@@ -11,12 +11,17 @@ import {Provider} from 'react-redux';
 
 import {store} from './store/store';
 import {navigationPaths} from './utils/navigationConstants';
+
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './components/Home';
 import ProductDetail from './components/ProductDetail';
 import Products from './components/Products';
 import Search from './components/Search';
+import Cart from './components/Cart';
+import Checkout from './components/Checkout';
+import Summary from './components/Summary';
+import CustomErrorBoundary from './components/CustomErrorBoundary';
 
 import './App.css';
 import 'react-loading-skeleton/dist/skeleton.css'
@@ -58,6 +63,7 @@ export const skeletonTheme = {
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     setIsLoading(false);
   }, []);
@@ -72,25 +78,30 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <SkeletonTheme {...skeletonTheme.ligth}>
+      <SkeletonTheme {...skeletonTheme.light}>
         <Provider store={store}>
           <BrowserRouter>
             <StyledApp>
-              <MainContainer>
-                <Header/>
-              </MainContainer>
-              <ContentContainer>
-                <Routes>
-                  <Route path={navigationPaths.home} element={<Home/>}/>
-                  <Route path={navigationPaths.home2} element={<Home/>}/>
-                  <Route path={navigationPaths.product} element={<ProductDetail/>}/>
-                  <Route path={navigationPaths.products} element={<Products/>}/>
-                  <Route path={navigationPaths.search} element={<Search/>}/>
-                </Routes>
-              </ContentContainer>
-              <MainContainer>
-                <Footer/>
-              </MainContainer>
+              <CustomErrorBoundary>
+                <MainContainer>
+                  <Header/>
+                </MainContainer>
+                <ContentContainer>
+                  <Routes>
+                    <Route path={navigationPaths.home} element={<Home/>}/>
+                    <Route path={navigationPaths.home2} element={<Home/>}/>
+                    <Route path={navigationPaths.product} element={<ProductDetail/>}/>
+                    <Route path={navigationPaths.products} element={<Products/>}/>
+                    <Route path={navigationPaths.search} element={<Search/>}/>
+                    <Route path={navigationPaths.cart} element={<Cart/>}/>
+                    <Route path={navigationPaths.checkout} element={<Checkout/>}/>
+                    <Route path={navigationPaths.summary} element={<Summary/>}/>
+                  </Routes>
+                </ContentContainer>
+                <MainContainer>
+                  <Footer/>
+                </MainContainer>
+              </CustomErrorBoundary>
             </StyledApp>
           </BrowserRouter>
         </Provider>

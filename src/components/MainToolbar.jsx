@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import {Cart} from '@styled-icons/bootstrap/Cart';
 
 import SearchInput from './SearchInput';
-import Button from './Button';
+import CartBadge from './CartBadge';
+
 
 const StyledMainToolbar = styled.div`
     display: flex;
@@ -10,15 +10,12 @@ const StyledMainToolbar = styled.div`
     justify-content: space-evenly;
 `;
 
+
 const MainToolbar = () => {
     return (
         <StyledMainToolbar>
             <SearchInput/>
-            <Button
-                disabled
-            >
-                <Cart size="18" title="Cart"/>
-            </Button>
+            <CartBadge/>
         </StyledMainToolbar>
     );
 };

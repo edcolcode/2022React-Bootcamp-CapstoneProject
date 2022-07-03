@@ -3,8 +3,10 @@ import styled from "styled-components";
 import { useNavigate, createSearchParams, useLocation } from "react-router-dom";
 import {navigationPaths, queriesParams} from '../utils/navigationConstants';
 
+import Input from './Input';
 
-const StyledSearchInput = styled.input`
+
+const StyledSearchInput = styled(Input)`
     min-width: 120px;
 `;
 
@@ -32,7 +34,7 @@ const SearchInput = () => {
                 })}`,
             })
         }
-    }
+    };
 
     return (
         <StyledSearchInput 

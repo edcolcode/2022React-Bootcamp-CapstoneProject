@@ -3,8 +3,11 @@ import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 import { useNavigate } from 'react-router-dom';
 
-import Button from './Button';
+import {useSelector, useDispatch} from 'react-redux';
+import {addItem} from '../store/cartSlice';
 import { navigationPaths, pathParams } from '../utils/navigationConstants';
+
+import Button from './Button';
 
 
 const width = 200;
@@ -54,8 +57,21 @@ const Item = ({id, detail, loading}) => {
         category: {slug: category},
         mainimage: {url: image},
         price,
+        stock,
     } = detail;
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const itemsOnCart = useSelector(({cart}) => {
+        const productOnCart = cart.items[id];
+        if (productOnCart) {
+            return productOnCart[0];
+        }
+        return 0;
+    });
+
+    const handleAddToCart = () => {
+        dispatch(addItem({item: {id: id, ...detail}}));
+    };
 
     const navigateProductDetail = () => {
         navigate(navigationPaths.product.replace(`:${pathParams.product}`, id));
@@ -97,10 +113,12 @@ const Item = ({id, detail, loading}) => {
                         {'$ ' + price}
                     </StyledItemPriceContainer>
                 }
-                {!loading
+                {!loading && stock > 0 && itemsOnCart < stock
                     ? 
                     <StyledItemAddToCartContainer>
-                        <Button>
+                        <Button
+                            onClick={handleAddToCart}
+                        >
                             Add to cart
                         </Button>
                     </StyledItemAddToCartContainer>
@@ -129,6 +147,7 @@ Item.defaultProps = {
             url: null,
         },
         price: null,
+        stock: 1,
     },
     loading: false,
 }

@@ -9,7 +9,10 @@ export const queriesParams = Object.freeze({
 
 const products = '/products';
 const product = `/product/:${pathParams.product}`;
-const search = `/search`;
+const search = '/search';
+const cart = '/cart';
+const checkout = '/checkout';
+const summary = '/summary';
 
 export const navigationPaths = Object.freeze({
     home: '/',
@@ -17,4 +20,7 @@ export const navigationPaths = Object.freeze({
     product: product,
     products: products,
     search: search,
+    cart: cart,
+    checkout: checkout,
+    summary: summary,
 });

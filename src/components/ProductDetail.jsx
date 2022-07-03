@@ -2,19 +2,22 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 import { useParams } from 'react-router-dom';
-import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
-
-import {useProduct} from '../utils/hooks/useProduct';
-import Button from './Button';
-import NumerInput from './NumberInput';
-
-// Styles must use direct files imports
-import 'swiper/swiper-bundle.min.css';
-import "swiper/swiper.min.css";
-import "swiper/modules/navigation/navigation.min.css";
-import 'swiper/modules/pagination/pagination.min.css';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import { nanoid } from 'nanoid';
-//import 'swiper/swiper.scss'; // core Swiper
+
+import {useSelector, useDispatch} from 'react-redux';
+import {modifyItem} from '../store/cartSlice';
+import {useProduct} from '../utils/hooks/useProduct';
+import { getValidNumberInRange } from '../utils/validationUtils';
+
+import Button from './Button';
+import NumberInput from './NumberInput';
+
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
+
 
 const swiperMaxHeight = 600;
 const StyledProductDetail = styled.div`
@@ -78,9 +81,23 @@ const StyledProductDescriptionContainer = styled.div`
 
 
 const ProducDetail = () => {
-    const {productId} = useParams();
     const [product, setProduct] = useState(null);
+    const [quantity, setQuantity] = useState(1);
+
+    const {productId} = useParams();
     const {data, isLoading} = useProduct(productId);
+
+    const itemsOnCart = useSelector(({cart}) => {
+        const productOnCart = cart.items[productId];
+        if (productOnCart) {
+            return productOnCart[0];
+        }
+        return 0;
+    });
+    const dispatch = useDispatch();
+
+    const stock = product ? product.data.stock : 0;
+    const availableStock = stock - itemsOnCart;
 
     useEffect(() => {
         if (!isLoading) {
@@ -88,6 +105,24 @@ const ProducDetail = () => {
             setProduct(result);
         }
     }, [isLoading, data]);
+
+    const handleQuantity = (event) => {
+        const _quantity = event.target.value;
+        setQuantity(_quantity);
+    };
+    const handleQuantityOnBlur = (event) => {
+        const newValue = getValidNumberInRange(
+            event.target.value, 1, 1, availableStock);
+        setQuantity(newValue);
+    }
+
+    const handleModifyItem = () => {
+        dispatch(modifyItem({
+            item: {id: productId, ...product.data}, 
+            amount: quantity + itemsOnCart,
+        }));
+        setQuantity(1);
+    }
 
     const {
         data: {
@@ -120,6 +155,7 @@ const ProducDetail = () => {
         :
         product;
     const tagsText = tags.join(', ');
+    const disabledItem = itemsOnCart >= stock || stock === 0;
 
     return (
         <StyledProductDetail>
@@ -186,8 +222,20 @@ const ProducDetail = () => {
                             null
                             :
                             <StyledProductAddContainer>
-                                <NumerInput />
-                                <Button>Add to cart</Button>
+                                <NumberInput 
+                                    value={quantity}
+                                    disabled={disabledItem}
+                                    max={availableStock}
+                                    min={1}
+                                    onChange={handleQuantity}
+                                    onBlur={handleQuantityOnBlur}
+                                />
+                                <Button
+                                    onClick={handleModifyItem}
+                                    disabled={disabledItem}
+                                >
+                                    Add to cart
+                                </Button>
                             </StyledProductAddContainer>
                         }
                     </StyledProductDetailInfoContainer>
