@@ -23,7 +23,7 @@ const Error = ({error, resetErrorBoundary}) => {
         <StyledErrorDiv>
             <h2>Something went wrong :(</h2>
             <a 
-                href="#"
+                href="/"
                 onClick={onReturnClick}
             >
                 Return to home page

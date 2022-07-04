@@ -1,8 +1,13 @@
 const Summary = () => {
-    throw new Error('Not implemented yet');
+    const error =  Error('Not implemented yet');
+
+    const throwError = () => {
+        throw error;
+    };
 
     return (
         <>
+            {throwError()}
         </>
     );
 };
