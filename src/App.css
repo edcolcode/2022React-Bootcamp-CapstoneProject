@@ -1,0 +1,7 @@
+.skeletonCustomContainer {
+    flex-grow: 1;
+}
+
+.skeletonFullWidthContainer {
+    min-width: 100%;
+}

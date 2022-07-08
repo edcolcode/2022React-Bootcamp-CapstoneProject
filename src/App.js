@@ -1,15 +1,29 @@
-import {useState} from 'react';
-import { useFeaturedBanners } from './utils/hooks/useFeaturedBanners';
+import {useState, useEffect} from 'react';
 import styled, {ThemeProvider} from 'styled-components';
 import theme from './themes';
-import {SkeletonTheme} from 'react-loading-skeleton'
+import {SkeletonTheme} from 'react-loading-skeleton';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from 'react-router-dom';
+import {Provider} from 'react-redux';
+
+import {store} from './store/store';
+import {navigationPaths} from './utils/navigationConstants';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './components/Home';
+import ProductDetail from './components/ProductDetail';
 import Products from './components/Products';
+import Search from './components/Search';
+import Cart from './components/Cart';
+import Checkout from './components/Checkout';
+import Summary from './components/Summary';
+import CustomErrorBoundary from './components/CustomErrorBoundary';
 
-
+import './App.css';
 import 'react-loading-skeleton/dist/skeleton.css'
 
 const LoadingView = styled.div`
@@ -40,19 +54,19 @@ const ContentContainer = styled(MainContainer)`
 `;
 
 export const skeletonTheme = {
-  light: {
-    
-  },
+  light: {},
   dark: {
-    baseColor: "#202020",
-    highlightColor: "#444",
+    baseColor: theme.colorOnSecondaryContainer,
+    highlightColor: theme.colorSecondaryContainer,
   },
 };
 
 const App = () => {
-  // const { data, isLoading } = useFeaturedBanners();
-  const {isLoading} = useFeaturedBanners();
-  const [isHomeDisplayed, setIsHomeDisplayed] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
 
   if (isLoading) {
     return (
@@ -62,36 +76,35 @@ const App = () => {
     );
   }
 
-  const navigateHome = () => {
-    setIsHomeDisplayed(true);
-  };
-  const navigateProducts = () => {
-    setIsHomeDisplayed(false);
-  };
-
   return (
     <ThemeProvider theme={theme}>
-      <SkeletonTheme {...skeletonTheme.ligth}>
-        <StyledApp>
-          <MainContainer>
-            <Header 
-              navigateHome={navigateHome}
-            />
-          </MainContainer>
-          <ContentContainer>
-            {
-              isHomeDisplayed 
-              ? 
-                <Home 
-                  navigateProducts={navigateProducts}
-                />
-              : <Products/>
-            }
-          </ContentContainer>
-          <MainContainer>
-            <Footer/>
-          </MainContainer>
-        </StyledApp>
+      <SkeletonTheme {...skeletonTheme.light}>
+        <Provider store={store}>
+          <BrowserRouter>
+            <StyledApp>
+              <CustomErrorBoundary>
+                <MainContainer>
+                  <Header/>
+                </MainContainer>
+                <ContentContainer>
+                  <Routes>
+                    <Route path={navigationPaths.home} element={<Home/>}/>
+                    <Route path={navigationPaths.home2} element={<Home/>}/>
+                    <Route path={navigationPaths.product} element={<ProductDetail/>}/>
+                    <Route path={navigationPaths.products} element={<Products/>}/>
+                    <Route path={navigationPaths.search} element={<Search/>}/>
+                    <Route path={navigationPaths.cart} element={<Cart/>}/>
+                    <Route path={navigationPaths.checkout} element={<Checkout/>}/>
+                    <Route path={navigationPaths.summary} element={<Summary/>}/>
+                  </Routes>
+                </ContentContainer>
+                <MainContainer>
+                  <Footer/>
+                </MainContainer>
+              </CustomErrorBoundary>
+            </StyledApp>
+          </BrowserRouter>
+        </Provider>
       </SkeletonTheme>
     </ThemeProvider>
   );

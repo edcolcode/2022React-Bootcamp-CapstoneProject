@@ -1,6 +1,7 @@
-import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import {useNavigate} from 'react-router-dom';
 
+import {navigationPaths} from '../utils/navigationConstants';
 import Logo from './Logo';
 import MainToolbar from './MainToolbar';
 
@@ -17,19 +18,21 @@ const StyledHeader = styled.div`
     box-sizing: border-box;
 `;
 
-const Header = ({navigateHome}) => {
+const Header = () => {
+    const navigate = useNavigate();
+
+    const handleLogoClick = () => {
+        navigate(navigationPaths.home);
+    };
+
     return (
         <StyledHeader>
             <Logo
-                onClick={navigateHome}
+                onClick={handleLogoClick}
             />
             <MainToolbar/>
         </StyledHeader>
     );
-}
-
-Header.propTypes = {
-    navigateHome: PropTypes.func.isRequired,
-}
+};
 
 export default Header;
