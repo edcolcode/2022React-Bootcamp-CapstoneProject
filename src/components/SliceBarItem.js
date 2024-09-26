@@ -21,7 +21,12 @@ const StyledSliceBarItemText = styled.span`
     text-decoration: underline;
 `;
 
-const SliceBarItem = ({id, name, selected, onClick, loading}) => {
+const SliceBarItem = ({id, name, slug, selected, onClick, loading}) => {
+    const handleOnClick = (event) => {
+        event.preventDefault();
+        onClick(slug);
+    };
+
     if (loading) {
         return (
             <Skeleton/>
@@ -32,7 +37,7 @@ const SliceBarItem = ({id, name, selected, onClick, loading}) => {
         <StyledSliceBarItem
             data-id={id}
             selected={selected}
-            onClick={onClick}
+            onClick={handleOnClick}
         >
             <StyledSliceBarItemA 
                 href="#"
@@ -49,6 +54,7 @@ SliceBarItem.propTypes = {
     loading: PropTypes.bool.isRequired,
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
+    slug: PropTypes.string.isRequired,
     selected: PropTypes.bool.isRequired,
     onClick: PropTypes.func,
 }
@@ -57,6 +63,7 @@ SliceBarItem.defaulProps = {
     loading: false,
     selected: false,
     name: null,
+    slug: null,
     onClick: () => {},
 }
 

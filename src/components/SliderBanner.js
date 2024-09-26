@@ -1,12 +1,14 @@
 import {useState, useEffect} from 'react';
-import PropTypes from 'prop-types';
-import Button from './Button';
+import styled from 'styled-components';
+import Skeleton from 'react-loading-skeleton';
+
 import {NavigateBefore} from '@styled-icons/material-outlined/NavigateBefore';
 import {Pause} from '@styled-icons/bootstrap/Pause';
 import {NavigateNext} from '@styled-icons/material-outlined/NavigateNext';
 import {Play} from '@styled-icons/boxicons-regular/Play';
 
-import styled from 'styled-components';
+import {useFeaturedBanners} from '../utils/hooks/useFeaturedBanners';
+import Button from './Button';
 
 const PLAYBACK_SPEED_MS = 3000;
 
@@ -42,7 +44,10 @@ const StyledSliderBannerTitle = styled.h4`
     text-shadow: 0px 0px 4px black;
 `;
 
-const SliderBanner = ({items}) => {
+const SliderBanner = () => {
+    const {data, isLoading} = useFeaturedBanners();
+    const [items, setItems] = useState([]);
+
     const [bannerIdx, setBannerIdx] = useState(1);
     const [isPlaybackActive, setIsPlaybackActive] = useState(true);
 
@@ -61,13 +66,24 @@ const SliderBanner = ({items}) => {
 
     useEffect(() => {
         let interval = null;
+        if (!isLoading) {
+            const results = data.results;
+            setItems(results);
+            if (results.length > 0) {
+                setIsPlaybackActive(true);
+            }
+        }
 
         if (isPlaybackActive) {
-            interval = setInterval(() => {
-                const bannersDataLength = items.length;
-                const nextBannerIdx = (bannerIdx + 1) % bannersDataLength;
-                setBannerIdx(nextBannerIdx);
-            }, PLAYBACK_SPEED_MS);
+            const bannersDataLength = items.length;
+            if (bannersDataLength <= 0) {
+                setIsPlaybackActive(false);
+            } else {
+                interval = setInterval(() => {
+                    const nextBannerIdx = (bannerIdx + 1) % bannersDataLength;
+                    setBannerIdx(nextBannerIdx);
+                }, PLAYBACK_SPEED_MS);
+            }
         } else {
             clearInterval(interval);
         }
@@ -75,15 +91,9 @@ const SliderBanner = ({items}) => {
         return () => {
             clearInterval(interval);
         };
-    }, [bannerIdx, isPlaybackActive, items]);
-    
+    }, [bannerIdx, isPlaybackActive, items, isLoading, data]);    
 
     const bannersDataLength = items.length;
-    if (bannerIdx >= bannersDataLength) {
-        setIsPlaybackActive(false);
-        return null;
-    };
-
     const handlePrevBanner = () => {
         let nextBannerIdx = (bannerIdx - 1) % bannersDataLength;
         if (nextBannerIdx < 0) {
@@ -101,50 +111,52 @@ const SliderBanner = ({items}) => {
         }
     };
 
-    const bannerDetails = items[bannerIdx];
-    const bannerImgUrl = bannerDetails?.data?.main_image?.url;
-
     return (
         <StyledSliderBanner>
-            {/* Content */}
-            <StyledSliderBannerTitleContainer>
-                <StyledSliderBannerTitle>
-                    {bannerDetails.data.title}
-                </StyledSliderBannerTitle>
-            </StyledSliderBannerTitleContainer>
-            <StyledSliderBannerImg src={bannerImgUrl}/>
-            {/* Navigation */}
-            <StyledSliderBannerNavigation>
-                <Button
-                    type="transparent"
-                    onClick={handlePrevBanner}
-                >
-                    <NavigateBefore size="18"/>
-                </Button>
-                <Button
-                    type="transparent"
-                    onClick={handleBannerPlayback}
-                >
-                    {
-                        isPlaybackActive
-                            ? <Pause size="18"/>
-                            : <Play size="18"/>
-                    }
-                    
-                </Button>
-                <Button
-                    type="transparent"
-                    onClick={handleNextBanner}
-                >
-                    <NavigateNext size="18"/>
-                </Button>
-            </StyledSliderBannerNavigation>
+            {isLoading 
+                ? <Skeleton containerClassName='skeletonFullWidthContainer' height={height}/>
+                :
+                    bannersDataLength <= 0
+                        ? null
+                        :
+                        <>
+                            {/* Content */}
+                            <StyledSliderBannerTitleContainer>
+                                <StyledSliderBannerTitle>
+                                    {items[bannerIdx].data.title}
+                                </StyledSliderBannerTitle>
+                            </StyledSliderBannerTitleContainer>
+                            <StyledSliderBannerImg src={items[bannerIdx]?.data?.main_image?.url}/>
+                            {/* Navigation */}
+                            <StyledSliderBannerNavigation>
+                                <Button
+                                    type="transparent"
+                                    onClick={handlePrevBanner}
+                                >
+                                    <NavigateBefore size="18"/>
+                                </Button>
+                                <Button
+                                    type="transparent"
+                                    onClick={handleBannerPlayback}
+                                >
+                                    {
+                                        isPlaybackActive
+                                            ? <Pause size="18"/>
+                                            : <Play size="18"/>
+                                    }
+                                    
+                                </Button>
+                                <Button
+                                    type="transparent"
+                                    onClick={handleNextBanner}
+                                >
+                                    <NavigateNext size="18"/>
+                                </Button>
+                            </StyledSliderBannerNavigation>
+                        </>
+            }
         </StyledSliderBanner>
     );
-}
-
-SliderBanner.propTypes = {
-    items: PropTypes.array.isRequired,
 }
 
 export default SliderBanner;

@@ -1,12 +1,11 @@
-import PropTypes from 'prop-types';
+import {useState, useEffect} from 'react';
 import styled from 'styled-components';
-import bannerData from '../mocks/featured-banners.json';
-import categories from '../mocks/product-categories.json';
-import items from '../mocks/feature-products.json';
+import {useNavigate} from 'react-router-dom';
 
+import {useFeaturedProducts} from '../utils/hooks/useFeaturedProducts';
+import {navigationPaths} from '../utils/navigationConstants';
 import SliderBanner from './SliderBanner';
 import Carousel from './Carousel';
-import Item from './Item';
 import ItemGrid from './ItemGrid';
 import Button from './Button';
 
@@ -20,30 +19,33 @@ const StyledMoreProductsContainer = styled.div`
     justify-content: center;
 `;
 
-const Home = ({navigateProducts}) => {    
+const Home = () => {
+    const {data, isLoading} = useFeaturedProducts();
+    const [items, setItems] = useState([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!isLoading){
+            const results = data.results;
+            setItems(results);
+        }
+    }, [data, isLoading]);
+
+    const handleViewAllProductsClick = () => {
+        navigate(navigationPaths.products);
+    }
+
     return(
         <div>
-            <SliderBanner
-                items={bannerData.results}
+            <SliderBanner/>
+            <Carousel/>
+            <ItemGrid 
+                items={items}
+                isLoading={isLoading}
             />
-            <Carousel
-                items={categories.results}
-            />
-            <ItemGrid
-                loading={false}
-            >
-                {
-                    items.results.map(item => 
-                        <Item
-                            key={item.id}
-                            detail={item.data}
-                        />
-                    )
-                }
-            </ItemGrid>
             <StyledMoreProductsContainer>
                 <Button
-                    onClick={navigateProducts}
+                    onClick={handleViewAllProductsClick}
                 >
                     View all products
                 </Button>
@@ -51,9 +53,5 @@ const Home = ({navigateProducts}) => {
         </div>
     );
 };
-
-Home.propTypes = {
-    navigateProducts: PropTypes.func.isRequired,
-}
 
 export default Home;
